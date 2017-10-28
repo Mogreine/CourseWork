@@ -1,7 +1,7 @@
 package RSA;
 
 public class AlgorithmRSA {
-    private final int e = 65537;
+    private final int e = 257;
     private String text;
     private long    privateKey,
                     publicKey,
@@ -10,7 +10,5 @@ public class AlgorithmRSA {
     public AlgorithmRSA (String text) {
         this.text = text;
     }
-
-
 
 }
