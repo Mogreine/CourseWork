@@ -69,6 +69,18 @@ public class Keys {
         return result;
     }
 
+    private long powMod(long n, long pow, long mod) {
+        if (pow == 0)
+            return 1;
+        long tmp = powMod(n, pow / 2, mod);
+        if (pow % 2 == 0) {
+            return (tmp * tmp) % mod;
+        }
+        else {
+            return (n * tmp * tmp) % mod;
+        }
+    }
+
     private long gcd (long a, long b) {
         return b != 0 ? gcd(b, a % b) : a;
     }
