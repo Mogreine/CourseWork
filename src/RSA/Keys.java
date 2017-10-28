@@ -26,7 +26,7 @@ public class Keys {
 //        return keys;
 //    }
 
-    private boolean isSimple(long num, int k) {
+    private boolean isSimple(int num, int k) {
         long t = num - 1;
         long s = 0 ;
         Random randNum = new Random();
@@ -35,19 +35,20 @@ public class Keys {
             t >>= 1;
         }
         for (int i = 0; i < k; i++) {
-            long a = 2 + randNum.nextInt(Integer.MAX_VALUE - 2);
-            long x = fastPow(a, t) % num;
+            long a = 1 + randNum.nextInt(num - 1);
+            long x = powMod(a, t, num);
             if (x == 1 || x == num - 1) {
                 continue;
             }
             boolean flag = false;
-            for (int ii = 0; i < s - 1; ii++) {
-                x = (x * x) % num;
+            for (int ii = 0; ii < s - 1; ii++) {
+                x = powMod(x, 2, num);
                 if (x == 1) {
                     return false;
                 }
                 if (x == num - 1) {
                     flag = true;
+                    break;
                 }
             }
             if (!flag) {
