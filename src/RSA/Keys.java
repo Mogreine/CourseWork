@@ -1,32 +1,37 @@
 package RSA;
 
-import java.util.Random;
+import ArbitraryPrecisionArithmetic.IBigInteger;
 
 public class Keys {
 
-    private class pair {
-        Long publicKey;
-        Long privateKey;
+    public static class KeysPair {
+        IBigInteger publicKey;
+        IBigInteger privateKey;
 
-        public pair() {
-            this(0L, 0L);
+        public KeysPair() {
+            this.publicKey = new IBigInteger(0L);
+            this.privateKey = new IBigInteger(0L);
         }
 
-        public pair(Long publicKey, Long privateKey) {
-            this.publicKey = publicKey;
-            this.privateKey = privateKey;
+        public KeysPair(IBigInteger publicKey, IBigInteger privateKey) {
+            this.publicKey = new IBigInteger(publicKey);
+            this.privateKey = new IBigInteger(privateKey);
         }
     }
 
-    private pair keys;
+    static public KeysPair genKeys() {
+        KeysPair keys = new KeysPair(IBigInteger.randomBigInt(77), IBigInteger.randomBigInt(77));
+        while (!IBigInteger.isSimple(keys.privateKey)) {
+            keys.privateKey = IBigInteger.randomBigInt(77);
+        }
+        while (!IBigInteger.isSimple(keys.publicKey)) {
+            keys.publicKey = IBigInteger.randomBigInt(77);
+        }
+        return keys;
+    }
 
-//    public pair genKeys() {
-//        Random randomNum = new Random();
-//        long p = randomNum
-//        return keys;
-//    }
 
-    private boolean isSimple(int num, int k) {
+    /*private boolean isSimple(int num, int k) {
         long t = num - 1;
         long s = 0 ;
         Random randNum = new Random();
@@ -84,5 +89,5 @@ public class Keys {
 
     private long gcd (long a, long b) {
         return b != 0 ? gcd(b, a % b) : a;
-    }
+    }*/
 }

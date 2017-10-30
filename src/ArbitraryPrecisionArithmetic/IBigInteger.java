@@ -23,6 +23,14 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
     }
 
+    public IBigInteger(IBigInteger number) {
+        IBigInteger result = new IBigInteger(0L);
+        for (int i = 0; i < number.size(); i++) {
+            result.set(i, number.get(i));
+        }
+        result.size = number.size();
+    }
+
     public static IBigInteger randomBigInt(int size) {
         Random rand = new Random();
         IBigInteger result = new IBigInteger(0L);
@@ -34,37 +42,40 @@ public class IBigInteger implements Comparable<IBigInteger> {
         return result;
     }
 
-    /*public static boolean isSimple(IBigInteger number) {
-        return isSimple(number, 55);
-    }*/
-
-    /*private static boolean isSimple(IBigInteger number, int k) {
-        IBigInteger t = number.sub(new IBigInteger(1L));
-        long s = 0;
-
+    public static IBigInteger gcd(IBigInteger a, IBigInteger b) {
+        return gcd(a, b, new IBigInteger(0L));
     }
 
-    private boolean isSimple(int num, int k) {
-        long t = num - 1;
-        long s = 0 ;
-        Random randNum = new Random();
-        while (t % 2 == 0) {
+    public static IBigInteger gcd(IBigInteger a, IBigInteger b, IBigInteger zero) {
+        return b.compareTo(zero) != 0 ? gcd(b, a.mod(b), zero) : a;
+    }
+
+    public static boolean isSimple(IBigInteger number) {
+        return isSimple(number, 55);
+    }
+
+    private static boolean isSimple(IBigInteger number, int k) {
+        IBigInteger t = number.sub(new IBigInteger(1L));
+        long s = 0;
+        while (t.mod(2) == 0) {
             s++;
-            t >>= 1;
+            t.div(2);
         }
+        IBigInteger one = new IBigInteger(1L);
+        IBigInteger num_1 = number.sub(new IBigInteger(1L));
         for (int i = 0; i < k; i++) {
-            long a = 1 + randNum.nextInt(num - 1);
-            long x = powMod(a, t, num);
-            if (x == 1 || x == num - 1) {
+            IBigInteger a = IBigInteger.randomBigInt(77);
+            IBigInteger x = IBigInteger.powMod(a, t, number);
+            if (x.compareTo(one) == 0 || x.compareTo(num_1) == 0) {
                 continue;
             }
             boolean flag = false;
             for (int ii = 0; ii < s - 1; ii++) {
-                x = powMod(x, 2, num);
-                if (x == 1) {
+                x = powMod(x, 2, number);
+                if (x.compareTo(one) == 0) {
                     return false;
                 }
-                if (x == num - 1) {
+                if (x.compareTo(num_1) == 0) {
                     flag = true;
                     break;
                 }
@@ -74,7 +85,8 @@ public class IBigInteger implements Comparable<IBigInteger> {
             }
         }
         return true;
-    }*/
+    }
+
 
     public static IBigInteger powMod(IBigInteger n, int pow, IBigInteger mod) {
         if (pow == 0) {
@@ -82,6 +94,19 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
         IBigInteger tmp = powMod(n, pow / 2, mod);
         if (pow % 2 == 0) {
+            return (tmp.mul(tmp)).mod(mod);
+        }
+        else {
+            return (n.mul(tmp.mul(tmp))).mod(mod);
+        }
+    }
+
+    public static IBigInteger powMod(IBigInteger n, IBigInteger pow, IBigInteger mod) {
+        if (pow.compareTo(new IBigInteger(0L)) == 0) {
+            return new IBigInteger(1L);
+        }
+        IBigInteger tmp = powMod(n, pow.div(2), mod);
+        if (pow.mod(2) == 0) {
             return (tmp.mul(tmp)).mod(mod);
         }
         else {

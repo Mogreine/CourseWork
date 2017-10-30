@@ -1,14 +1,12 @@
 package RSA;
 
+import ArbitraryPrecisionArithmetic.IBigInteger;
+
 public class AlgorithmRSA {
-    private final int e = 257;
-    private String text;
-    private long    privateKey,
-                    publicKey,
-                    anotherPublicKey;
 
-    public AlgorithmRSA (String text) {
-        this.text = text;
-    }
+    private final int e = 65537;
 
+    /*public static String encoding(IBigInteger publicKey, IBigInteger privateKey) {
+        Keys.pair keysPair = Keys.genKeys();
+    }*/
 }
