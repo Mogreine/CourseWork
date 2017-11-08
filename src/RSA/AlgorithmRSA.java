@@ -7,6 +7,6 @@ public class AlgorithmRSA {
     private final int e = 65537;
 
     /*public static String encoding(IBigInteger publicKey, IBigInteger privateKey) {
-        Keys.pair keysPair = Keys.genKeys();
+        Keys.KeysPair keysPair = Keys.genKeys();
     }*/
 }

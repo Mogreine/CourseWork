@@ -31,6 +31,15 @@ public class IBigInteger implements Comparable<IBigInteger> {
         result.size = number.size();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+        for (int i = size - 1; i >= 0; i--) {
+            result.append(numsArr[i]);
+        }
+        return result.toString();
+    }
+
     public static IBigInteger randomBigInt(int size) {
         Random rand = new Random();
         IBigInteger result = new IBigInteger(0L);
@@ -142,9 +151,10 @@ public class IBigInteger implements Comparable<IBigInteger> {
     public IBigInteger add(IBigInteger number) {
         IBigInteger result = new IBigInteger(0L);
         int carry = 0;
-        for (int i = 0; i < Math.max(this.size(), number.size()) || carry != 0; i++) {
+        int forSize = Math.max(this.size(), number.size());
+        for (int i = 0; i < forSize || carry != 0; i++) {
             long x = (long) this.get(i) + number.get(i) + carry;
-            this.set(i, (int) x % BASE);
+            result.set(i, (int) x % BASE);
             carry = (int) x / 10;
         }
         result.size = Math.max(this.size(), number.size()) + 1;
@@ -166,7 +176,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
             result.set(i, (int) (x + BASE) % BASE);
         }
         result.size = this.size();
-        while (size > 1 && result.get(result.size - 1) == 0) {
+        while (result.size > 1 && result.get(result.size - 1) == 0) {
             result.size--;
         }
         return result;
@@ -177,7 +187,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
         for (int i = 0; i < this.size(); i++) {
             int carry = 0;
             for (int j = 0; j < number.size() || carry != 0; j++) {
-                long x = result.get(i + j) + (long) number.get(i) * number.get(j) + carry;
+                long x = result.get(i + j) + (long) this.get(i) * number.get(j) + carry;
                 result.set(i + j, (int) x % BASE);
                 carry = (int) x / BASE;
             }
@@ -194,7 +204,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
         int carry = 0;
         for (int i = 0; i < this.size() || carry != 0; i++) {
             long x = (long) this.get(i) * number + carry;
-            this.set(i, (int) (x % BASE));
+            result.set(i, (int) (x % BASE));
             carry = (int) x / BASE;
         }
         result.size = this.size() + 1;
@@ -256,6 +266,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
                     r = BASE - 1,
                     m = 0;
             while (l + 1 < r) {
+                m = l + (r - l) / 2;
                 if (number.mul(m).compareTo(carry) <= 0) {
                     l = m;
                 }
