@@ -1,6 +1,7 @@
 package RSA;
 
 import ArbitraryPrecisionArithmetic.IBigInteger;
+import sun.java2d.loops.GraphicsPrimitive;
 
 public class Keys {
 
@@ -17,15 +18,45 @@ public class Keys {
             this.publicKey = new IBigInteger(publicKey);
             this.privateKey = new IBigInteger(privateKey);
         }
+
+        public IBigInteger getPublicKey() {
+            return publicKey;
+        }
+
+        public IBigInteger getPrivateKey() {
+            return privateKey;
+        }
     }
 
-    static public KeysPair genKeys() {
-        KeysPair keys = new KeysPair(IBigInteger.randomBigInt(77), IBigInteger.randomBigInt(77));
-        while (!IBigInteger.isSimple(keys.privateKey)) {
-            keys.privateKey = IBigInteger.randomBigInt(77);
+    private static class IThread extends Thread {
+        private IBigInteger number;
+
+        public IThread(IBigInteger number) {
+            this.number = number;
         }
-        while (!IBigInteger.isSimple(keys.publicKey)) {
-            keys.publicKey = IBigInteger.randomBigInt(77);
+
+        public void start() {
+            run();
+        }
+
+        public void run() {
+            while (!IBigInteger.isSimple(number)) {
+                number.change(number.add(IBigInteger.ONE));
+            }
+        }
+    }
+
+    static public KeysPair genKeys(int length) {
+        KeysPair keys = new KeysPair(IBigInteger.randomBigInt(length), IBigInteger.randomBigInt(length));
+        IThread n1 = new IThread(keys.privateKey);
+        IThread n2 = new IThread(keys.publicKey);
+        n1.start();
+        n2.start();
+        try {
+            n1.join();
+            n2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
         return keys;
     }

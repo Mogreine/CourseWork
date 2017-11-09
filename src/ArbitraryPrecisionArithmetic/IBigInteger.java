@@ -7,12 +7,14 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public final static int BASE = 10;
     public final static int MAX_SIZE = (int)1e4;
+    public final static IBigInteger ONE = new IBigInteger(1L);
+    public final static IBigInteger ZERO = new IBigInteger(0L);
     private int[] numsArr;
     protected int size;
 
     public IBigInteger(long number) {
         numsArr = new int[MAX_SIZE];
-        Arrays.fill(numsArr, 0);
+        //Arrays.fill(numsArr, 0);
         size = 0;
         if (number == 0) {
             size++;
@@ -23,12 +25,28 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
     }
 
-    public IBigInteger(IBigInteger number) {
-        IBigInteger result = new IBigInteger(0L);
-        for (int i = 0; i < number.size(); i++) {
-            result.set(i, number.get(i));
+    public IBigInteger(byte[] arr) {
+        numsArr = new int[MAX_SIZE];
+        size = arr.length;
+        for (int i = arr.length - 1; i >= 0; i--) {
+            numsArr[i] = arr[i];
         }
-        result.size = number.size();
+    }
+
+    public IBigInteger(String number) {
+        numsArr = new int[MAX_SIZE];
+        size = number.length();
+        for (int i = number.length() - 1, j = 0; i >= 0; i--, j++) {
+            numsArr[j] = Integer.parseInt(number.substring(i, i + 1));
+        }
+    }
+
+    public IBigInteger(IBigInteger number) {
+        numsArr = new int[MAX_SIZE];
+        size = number.size();
+        for (int i = 0; i < number.size(); i++) {
+            numsArr[i] = number.get(i);
+        }
     }
 
     @Override
@@ -48,40 +66,78 @@ public class IBigInteger implements Comparable<IBigInteger> {
             result.set(i, rand.nextInt(10));
         }
         result.size = size;
+        if (result.get(0) % 2 == 0) {
+            result.set(0, result.get(0) + 1);
+        }
+        return result;
+    }
+
+    public static IBigInteger randomBigInt(int size, IBigInteger bound) {
+        Random rand = new Random();
+        IBigInteger result = new IBigInteger(0L);
+        result.set(size - 1, 1 + rand.nextInt(10 - 1));
+        for (int i = 0; i < size - 1; i ++) {
+            result.set(i, rand.nextInt(10));
+        }
+        result.size = size;
+        if (result.get(0) % 2 == 0) {
+            result.set(0, result.get(0) + 1);
+        }
+        for (int i = result.size() - 1; i >= 0 && result.get(i) >= bound.get(i); i--) {
+            while (result.get(i) >= bound.get(i) && result.get(i) > 0) {
+                result.set(i, result.get(i) - 1);
+            }
+        }
         return result;
     }
 
     public static IBigInteger gcd(IBigInteger a, IBigInteger b) {
-        return gcd(a, b, new IBigInteger(0L));
+        return b.compareTo(ZERO) != 0 ? gcd(b, a.mod(b)) : a;
     }
 
-    public static IBigInteger gcd(IBigInteger a, IBigInteger b, IBigInteger zero) {
-        return b.compareTo(zero) != 0 ? gcd(b, a.mod(b), zero) : a;
+    public static IBigInteger gcdEx(IBigInteger a, IBigInteger b, IBigInteger x, IBigInteger y) {
+        if (a.compareTo(ZERO) == 0) {
+            x.change(ZERO);
+            y.change(ONE);
+            return b;
+        }
+        IBigInteger x1 = new IBigInteger(ZERO);
+        IBigInteger y1 = new IBigInteger(ZERO);
+        IBigInteger d = gcdEx(b.mod(a), a, x1, y1);
+        x.change(y1.sub((b.div(a)).mul(x1)));
+        y.change(y1);
+        return d;
     }
 
     public static boolean isSimple(IBigInteger number) {
         return isSimple(number, 55);
     }
 
+    private static boolean obviousNotPrime(IBigInteger num) {
+        return IBigInteger.isEven(num) || num.get(0) % 5 == 0;
+    }
+
     private static boolean isSimple(IBigInteger number, int k) {
-        IBigInteger t = number.sub(new IBigInteger(1L));
-        long s = 0;
-        while (t.mod(2) == 0) {
-            s++;
-            t.div(2);
+        if (IBigInteger.obviousNotPrime(number)) {
+            return false;
         }
-        IBigInteger one = new IBigInteger(1L);
-        IBigInteger num_1 = number.sub(new IBigInteger(1L));
+        IBigInteger t = number.sub(ONE);
+        long s = 0;
+        while (IBigInteger.isEven(t)) {
+            s++;
+            t = t.div(2);
+        }
+        IBigInteger num_1 = number.sub(ONE);
         for (int i = 0; i < k; i++) {
-            IBigInteger a = IBigInteger.randomBigInt(77);
+            IBigInteger a = IBigInteger.randomBigInt(number.size(), number.sub(new IBigInteger(2)));
             IBigInteger x = IBigInteger.powMod(a, t, number);
-            if (x.compareTo(one) == 0 || x.compareTo(num_1) == 0) {
+            if (x.compareTo(ONE) == 0 || x.compareTo(num_1) == 0) {
                 continue;
             }
             boolean flag = false;
             for (int ii = 0; ii < s - 1; ii++) {
                 x = powMod(x, 2, number);
-                if (x.compareTo(one) == 0) {
+                if (x.compareTo(ONE) == 0) {
                     return false;
                 }
                 if (x.compareTo(num_1) == 0) {
@@ -111,7 +167,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     public static IBigInteger powMod(IBigInteger n, IBigInteger pow, IBigInteger mod) {
-        if (pow.compareTo(new IBigInteger(0L)) == 0) {
+        if (pow.compareTo(ZERO) == 0) {
             return new IBigInteger(1L);
         }
         IBigInteger tmp = powMod(n, pow.div(2), mod);
@@ -121,6 +177,10 @@ public class IBigInteger implements Comparable<IBigInteger> {
         else {
             return (n.mul(tmp.mul(tmp))).mod(mod);
         }
+    }
+
+    public static boolean isEven(IBigInteger number) {
+        return number.get(0) % 2 == 0;
     }
 
     @Override
@@ -146,6 +206,16 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public void set(int index, int value) {
         numsArr[index] = value;
+    }
+
+    public void change(IBigInteger number) {
+        for (int i = 0; i < size; i++) {
+            numsArr[i] = 0;
+        }
+        size = number.size();
+        for (int i = 0; i < number.size(); i++) {
+            numsArr[i] = number.get(i);
+        }
     }
 
     public IBigInteger add(IBigInteger number) {
@@ -248,7 +318,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
         for (int i = this.size() - 1; i >= 0; i--) {
             long x = (long) carry * BASE + this.get(i);
             result.set(i, (int) x / number);
-            carry = carry % number;
+            carry = (int) x % number;
         }
         result.size = this.size();
         while (result.size > 1 && result.get(result.size - 1) == 0) {
