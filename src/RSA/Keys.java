@@ -1,7 +1,6 @@
 package RSA;
 
 import ArbitraryPrecisionArithmetic.IBigInteger;
-import sun.java2d.loops.GraphicsPrimitive;
 
 public class Keys {
 

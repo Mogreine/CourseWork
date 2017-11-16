@@ -1,6 +1,5 @@
 package ArbitraryPrecisionArithmetic;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class IBigInteger implements Comparable<IBigInteger> {
