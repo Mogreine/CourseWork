@@ -16,15 +16,16 @@ public class Main {
         System.out.println(myInt.add(new IBigInteger(1)));
         System.out.println(defaultInt.nextProbablePrime());*/
 
-        /*LocalTime t1 = LocalTime.now();
-        Keys.KeysPair keys = Keys.genKeys(6);
-        LocalTime t2 = LocalTime.now();
+        /*long t1 = System.currentTimeMillis();
+        Keys.KeysPair keys = Keys.genKeys(27);
+        long t2 = System.currentTimeMillis();
         System.out.println(IBigInteger.isPrime(keys.getPrivateKey()) + " " + new BigInteger(keys.getPrivateKey().toString()).isProbablePrime(55));
         System.out.println(IBigInteger.isPrime(keys.getPublicKey()) + " " + new BigInteger(keys.getPublicKey().toString()).isProbablePrime(55));
         System.out.println(keys.getPrivateKey() + " " + keys.getPublicKey());
-        System.out.print("Затраченное время: " + Duration.between(t2, t1));*/
-        IBigInteger a =  new IBigInteger(5L);
-        IBigInteger m =  new IBigInteger(12L);
+        System.out.print("Затраченное время: " + ((double)t2 - t1) / 1000);*/
+
+        IBigInteger a =  new IBigInteger(7);
+        IBigInteger m =  new IBigInteger(12);
         IBigInteger x =  new IBigInteger(IBigInteger.ZERO);
         IBigInteger y =  new IBigInteger(IBigInteger.ZERO);
         IBigInteger g = IBigInteger.gcdEx(a, m, x, y);
@@ -34,7 +35,7 @@ public class Main {
         else {
             x = (x.mod(m).add(m)).mod(m);
         }
-        System.out.print(x);
+        System.out.print(x + " " + y + " " + (Integer.parseInt(a.toString()) * Integer.parseInt(x.toString())) % Integer.parseInt(m.toString()));
     }
 
 }

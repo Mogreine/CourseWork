@@ -2,6 +2,7 @@ package ArbitraryPrecisionArithmetic;
 
 import java.util.Random;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 public class IBigInteger implements Comparable<IBigInteger> {
 
@@ -37,9 +38,16 @@ public class IBigInteger implements Comparable<IBigInteger> {
     public IBigInteger(String number) {
         numsArr = new int[MAX_SIZE];
         negative = number.charAt(0) == '-';
-        size = negative ? number.length() - 1 : number.length();
-        for (int i = size - 1, j = 0; i >= 0; i--, j++) {
+        size = number.length();
+        Predicate<Integer> cycle = i -> i >= 0;
+        if (negative) {
+            cycle = i -> i > 0;
+        }
+        for (int i = size - 1, j = 0; cycle.test(i); i--, j++) {
             numsArr[j] = Integer.parseInt(number.substring(i, i + 1));
+        }
+        if (negative) {
+            size--;
         }
     }
 
@@ -111,7 +119,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
         IBigInteger y1 = new IBigInteger(ZERO);
         IBigInteger d = gcdEx(b.mod(a), a, x1, y1);
         x.change(y1.sub((b.div(a)).mul(x1)));
-        y.change(y1);
+        y.change(x1);
         return d;
     }
 
@@ -244,11 +252,15 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     public IBigInteger add(IBigInteger number) {
-        if (number.negative && !this.negative) {
-            return this.div(number);
+        if (!this.negative && number.negative) {
+            IBigInteger tmp = new IBigInteger(number);
+            tmp.negative = false;
+            return this.sub(tmp);
         }
         if (this.negative && !number.negative) {
-            return number.div(this);
+            IBigInteger tmp = new IBigInteger(this);
+            tmp.negative = false;
+            return number.sub(tmp);
         }
         IBigInteger result = new IBigInteger(0L);
         int carry = 0;
@@ -270,7 +282,9 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public IBigInteger sub(IBigInteger number) {
         if (this.negative && number.negative) {
-            return this.add(number);
+            IBigInteger tmp = new IBigInteger(number);
+            tmp.negative = false;
+            return tmp.add(this);
         }
         if (number.negative || this.negative) {
             IBigInteger tmp = new IBigInteger(number);
@@ -278,7 +292,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
             return this.add(tmp);
         }
         if (this.compareTo(number) < 0) {
-            IBigInteger result = number.div(this);
+            IBigInteger result = number.sub(this);
             result.negative = true;
             return result;
         }
@@ -298,12 +312,16 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public IBigInteger mul(IBigInteger number) {
         IBigInteger result = new IBigInteger(0L);
+        boolean neg1 = this.negative;
+        boolean neg2 = number.negative;
         if (number.negative && this.negative) {
             result.negative = false;
         }
         else if (number.negative || this.negative) {
             result.negative = true;
         }
+        this.negative = false;
+        number.negative = false;
         for (int i = 0; i < this.size(); i++) {
             int carry = 0;
             for (int j = 0; j < number.size() || carry != 0; j++) {
@@ -316,17 +334,23 @@ public class IBigInteger implements Comparable<IBigInteger> {
         while (result.size > 1 && result.get(result.size - 1) == 0) {
             result.size--;
         }
+        this.negative = neg1;
+        number.negative = neg2;
         return result;
     }
 
     public IBigInteger mul(int number) {
         IBigInteger result = new IBigInteger(0L);
+        boolean neg1 = this.negative;
+        boolean neg2 = number < 0;
         if (number < 0 && this.negative) {
             result.negative = false;
         }
         else if (number < 0 || this.negative) {
             result.negative = true;
         }
+        this.negative = false;
+        number = Math.abs(number);
         int carry = 0;
         for (int i = 0; i < this.size() || carry != 0; i++) {
             long x = (long) this.get(i) * number + carry;
@@ -337,17 +361,25 @@ public class IBigInteger implements Comparable<IBigInteger> {
         while (result.size > 1 && result.get(result.size - 1) == 0) {
             result.size--;
         }
+        this.negative = neg1;
+        if (neg2) {
+            number *= -1;
+        }
         return result;
     }
 
     public IBigInteger div(IBigInteger number) {
         IBigInteger result = new IBigInteger(0L);
+        boolean neg1 = this.negative;
+        boolean neg2 = number.negative;
         if (number.negative && this.negative) {
             result.negative = false;
         }
         else if (number.negative || this.negative) {
             result.negative = true;
         }
+        this.negative = false;
+        number.negative = false;
         IBigInteger carry = new IBigInteger(0L);
         for (int i = this.size() - 1; i >= 0; i--) {
             carry = carry.mul(new IBigInteger(BASE));
@@ -371,17 +403,23 @@ public class IBigInteger implements Comparable<IBigInteger> {
         while (result.size > 1 && result.get(result.size - 1) == 0) {
             result.size--;
         }
+        this.negative = neg1;
+        number.negative = neg2;
         return result;
     }
 
     public IBigInteger div(int number) {
         IBigInteger result = new IBigInteger(0L);
+        boolean neg1 = this.negative;
+        boolean neg2 = number < 0;
         if (number < 0 && this.negative) {
             result.negative = false;
         }
         else if (number < 0 || this.negative) {
             result.negative = true;
         }
+        this.negative = false;
+        number = Math.abs(number);
         int carry = 0;
         for (int i = this.size() - 1; i >= 0; i--) {
             long x = (long) carry * BASE + this.get(i);
@@ -391,6 +429,10 @@ public class IBigInteger implements Comparable<IBigInteger> {
         result.size = this.size();
         while (result.size > 1 && result.get(result.size - 1) == 0) {
             result.size--;
+        }
+        this.negative = neg1;
+        if (neg2) {
+            number *= -1;
         }
         return result;
     }
