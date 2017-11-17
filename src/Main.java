@@ -12,15 +12,15 @@ public class Main {
         IBigInteger myInt = new IBigInteger("9795684123579518357551122165468797541");
         int pow = 1000;
         System.out.println(defaultInt.isProbablePrime(55));
-        System.out.println(IBigInteger.isSimple(myInt));
+        System.out.println(IBigInteger.isPrime(myInt));
         System.out.println(myInt.add(new IBigInteger(1)));
         System.out.println(defaultInt.nextProbablePrime());*/
 
         /*LocalTime t1 = LocalTime.now();
         Keys.KeysPair keys = Keys.genKeys(6);
         LocalTime t2 = LocalTime.now();
-        System.out.println(IBigInteger.isSimple(keys.getPrivateKey()) + " " + new BigInteger(keys.getPrivateKey().toString()).isProbablePrime(55));
-        System.out.println(IBigInteger.isSimple(keys.getPublicKey()) + " " + new BigInteger(keys.getPublicKey().toString()).isProbablePrime(55));
+        System.out.println(IBigInteger.isPrime(keys.getPrivateKey()) + " " + new BigInteger(keys.getPrivateKey().toString()).isProbablePrime(55));
+        System.out.println(IBigInteger.isPrime(keys.getPublicKey()) + " " + new BigInteger(keys.getPublicKey().toString()).isProbablePrime(55));
         System.out.println(keys.getPrivateKey() + " " + keys.getPublicKey());
         System.out.print("Затраченное время: " + Duration.between(t2, t1));*/
         IBigInteger a =  new IBigInteger(5L);

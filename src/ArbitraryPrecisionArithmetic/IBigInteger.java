@@ -1,6 +1,7 @@
 package ArbitraryPrecisionArithmetic;
 
 import java.util.Random;
+import java.util.function.BiPredicate;
 
 public class IBigInteger implements Comparable<IBigInteger> {
 
@@ -9,11 +10,12 @@ public class IBigInteger implements Comparable<IBigInteger> {
     public final static IBigInteger ONE = new IBigInteger(1L);
     public final static IBigInteger ZERO = new IBigInteger(0L);
     private int[] numsArr;
-    protected int size;
+    private boolean negative;
+    private int size;
 
     public IBigInteger(long number) {
+        negative = number < 0;
         numsArr = new int[MAX_SIZE];
-        //Arrays.fill(numsArr, 0);
         size = 0;
         if (number == 0) {
             size++;
@@ -34,13 +36,15 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public IBigInteger(String number) {
         numsArr = new int[MAX_SIZE];
-        size = number.length();
-        for (int i = number.length() - 1, j = 0; i >= 0; i--, j++) {
+        negative = number.charAt(0) == '-';
+        size = negative ? number.length() - 1 : number.length();
+        for (int i = size - 1, j = 0; i >= 0; i--, j++) {
             numsArr[j] = Integer.parseInt(number.substring(i, i + 1));
         }
     }
 
     public IBigInteger(IBigInteger number) {
+        negative = number.negative;
         numsArr = new int[MAX_SIZE];
         size = number.size();
         for (int i = 0; i < number.size(); i++) {
@@ -51,6 +55,9 @@ public class IBigInteger implements Comparable<IBigInteger> {
     @Override
     public String toString() {
         StringBuilder result = new StringBuilder();
+        if (negative) {
+            result.append('-');
+        }
         for (int i = size - 1; i >= 0; i--) {
             result.append(numsArr[i]);
         }
@@ -108,15 +115,15 @@ public class IBigInteger implements Comparable<IBigInteger> {
         return d;
     }
 
-    public static boolean isSimple(IBigInteger number) {
-        return isSimple(number, 55);
+    public static boolean isPrime(IBigInteger number) {
+        return isPrime(number, 55);
     }
 
     private static boolean obviousNotPrime(IBigInteger num) {
         return IBigInteger.isEven(num) || num.get(0) % 5 == 0;
     }
 
-    private static boolean isSimple(IBigInteger number, int k) {
+    private static boolean isPrime(IBigInteger number, int k) {
         if (IBigInteger.obviousNotPrime(number)) {
             return false;
         }
@@ -151,12 +158,23 @@ public class IBigInteger implements Comparable<IBigInteger> {
         return true;
     }
 
-
     public static IBigInteger powMod(IBigInteger n, int pow, IBigInteger mod) {
+        IBigInteger res = powMod1(n, pow, mod);
+        res.negative = pow % 2 != 0 && n.negative;
+        return res;
+    }
+
+    public static IBigInteger powMod(IBigInteger n, IBigInteger pow, IBigInteger mod) {
+        IBigInteger res = powMod1(n, pow, mod);
+        res.negative = pow.mod(2) != 0 && n.negative;
+        return res;
+    }
+
+    private static IBigInteger powMod1(IBigInteger n, int pow, IBigInteger mod) {
         if (pow == 0) {
             return new IBigInteger(1L);
         }
-        IBigInteger tmp = powMod(n, pow / 2, mod);
+        IBigInteger tmp = powMod1(n, pow / 2, mod);
         if (pow % 2 == 0) {
             return (tmp.mul(tmp)).mod(mod);
         }
@@ -165,11 +183,11 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
     }
 
-    public static IBigInteger powMod(IBigInteger n, IBigInteger pow, IBigInteger mod) {
+    public static IBigInteger powMod1(IBigInteger n, IBigInteger pow, IBigInteger mod) {
         if (pow.compareTo(ZERO) == 0) {
             return new IBigInteger(1L);
         }
-        IBigInteger tmp = powMod(n, pow.div(2), mod);
+        IBigInteger tmp = powMod1(n, pow.div(2), mod);
         if (pow.mod(2) == 0) {
             return (tmp.mul(tmp)).mod(mod);
         }
@@ -184,12 +202,19 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     @Override
     public int compareTo(IBigInteger number) {
+        if (number.negative != this.negative) {
+            return this.negative ? -1 : 1;
+        }
+        BiPredicate<Integer, Integer> comp = (a, b) -> a < b;
+        if (this.negative) {
+            comp = comp.negate();
+        }
         if (number.size() != this.size()) {
-            return this.size() < number.size() ? -1 : 1;
+            return comp.test(this.size(), number.size()) ? -1 : 1;
         }
         for (int i = size() - 1; i >= 0; i--) {
             if (this.get(i) != number.get(i)) {
-                return this.get(i) < number.get(i) ? -1 : 1;
+                return comp.test(this.get(i), number.get(i)) ? -1 : 1;
             }
         }
         return 0;
@@ -211,6 +236,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
         for (int i = 0; i < size; i++) {
             numsArr[i] = 0;
         }
+        this.negative = number.negative;
         size = number.size();
         for (int i = 0; i < number.size(); i++) {
             numsArr[i] = number.get(i);
@@ -218,6 +244,12 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     public IBigInteger add(IBigInteger number) {
+        if (number.negative && !this.negative) {
+            return this.div(number);
+        }
+        if (this.negative && !number.negative) {
+            return number.div(this);
+        }
         IBigInteger result = new IBigInteger(0L);
         int carry = 0;
         int forSize = Math.max(this.size(), number.size());
@@ -230,13 +262,26 @@ public class IBigInteger implements Comparable<IBigInteger> {
         while (result.size > 1 && result.get(result.size - 1) == 0) {
             result.size--;
         }
+        if (number.negative && this.negative) {
+            result.negative = true;
+        }
         return result;
     }
 
-    /*
-    Работает корректно только если number <= this
-     */
     public IBigInteger sub(IBigInteger number) {
+        if (this.negative && number.negative) {
+            return this.add(number);
+        }
+        if (number.negative || this.negative) {
+            IBigInteger tmp = new IBigInteger(number);
+            tmp.negative = !number.negative;
+            return this.add(tmp);
+        }
+        if (this.compareTo(number) < 0) {
+            IBigInteger result = number.div(this);
+            result.negative = true;
+            return result;
+        }
         IBigInteger result = new IBigInteger(0L);
         int carry = 0;
         for (int i = 0; i < this.size() || carry != 0; i++) {
@@ -253,6 +298,12 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public IBigInteger mul(IBigInteger number) {
         IBigInteger result = new IBigInteger(0L);
+        if (number.negative && this.negative) {
+            result.negative = false;
+        }
+        else if (number.negative || this.negative) {
+            result.negative = true;
+        }
         for (int i = 0; i < this.size(); i++) {
             int carry = 0;
             for (int j = 0; j < number.size() || carry != 0; j++) {
@@ -270,6 +321,12 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public IBigInteger mul(int number) {
         IBigInteger result = new IBigInteger(0L);
+        if (number < 0 && this.negative) {
+            result.negative = false;
+        }
+        else if (number < 0 || this.negative) {
+            result.negative = true;
+        }
         int carry = 0;
         for (int i = 0; i < this.size() || carry != 0; i++) {
             long x = (long) this.get(i) * number + carry;
@@ -285,6 +342,12 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public IBigInteger div(IBigInteger number) {
         IBigInteger result = new IBigInteger(0L);
+        if (number.negative && this.negative) {
+            result.negative = false;
+        }
+        else if (number.negative || this.negative) {
+            result.negative = true;
+        }
         IBigInteger carry = new IBigInteger(0L);
         for (int i = this.size() - 1; i >= 0; i--) {
             carry = carry.mul(new IBigInteger(BASE));
@@ -313,6 +376,12 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public IBigInteger div(int number) {
         IBigInteger result = new IBigInteger(0L);
+        if (number < 0 && this.negative) {
+            result.negative = false;
+        }
+        else if (number < 0 || this.negative) {
+            result.negative = true;
+        }
         int carry = 0;
         for (int i = this.size() - 1; i >= 0; i--) {
             long x = (long) carry * BASE + this.get(i);

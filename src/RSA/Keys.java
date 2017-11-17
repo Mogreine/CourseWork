@@ -39,8 +39,8 @@ public class Keys {
         }
 
         public void run() {
-            while (!IBigInteger.isSimple(number)) {
-                number.change(number.add(IBigInteger.ONE));
+            while (!IBigInteger.isPrime(number)) {
+                number.change(IBigInteger.randomBigInt(number.size()));
             }
         }
     }
@@ -61,7 +61,7 @@ public class Keys {
     }
 
 
-    /*private boolean isSimple(int num, int k) {
+    /*private boolean isPrime(int num, int k) {
         long t = num - 1;
         long s = 0 ;
         Random randNum = new Random();
