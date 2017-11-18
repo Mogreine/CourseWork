@@ -1,11 +1,5 @@
 import ArbitraryPrecisionArithmetic.IBigInteger;
 import RSA.AlgorithmRSA;
-import RSA.Keys;
-import sun.nio.cs.ext.IBM037;
-
-import java.math.BigInteger;
-import java.time.Duration;
-import java.time.LocalTime;
 
 public class Main {
 
@@ -40,12 +34,25 @@ public class Main {
         }
         System.out.print(x + " " + (aa * Integer.parseInt(x.toString())) % mm);*/
 
-        AlgorithmRSA user1 = new AlgorithmRSA();
-        AlgorithmRSA user2 = new AlgorithmRSA();
+        AlgorithmRSA user1 = new AlgorithmRSA(6);
+        AlgorithmRSA user2 = new AlgorithmRSA(6);
         IBigInteger message = new IBigInteger(132L);
-        String encodedLetter = user1.encoding(message, user2.getOpenKey());
+
+        for (int i = 0; i < 10; i++) {
+            String encodedLetter = user1.encoding(message, user2.getPublicKey());
+            String decodedLetter = user2.decoding(new IBigInteger(encodedLetter));
+            user1 = new AlgorithmRSA(6);
+            user2 = new AlgorithmRSA(6);
+            System.out.println(decodedLetter);
+        }
+
+        /*String encodedLetter = user1.encoding(message, user2.getPublicKey());
         String decodedLetter = user2.decoding(new IBigInteger(encodedLetter));
-        System.out.print(decodedLetter);
+        System.out.print(decodedLetter);*/
+
+        /*IBigInteger a = new IBigInteger(-1);
+        IBigInteger b = new IBigInteger(0);
+        System.out.print(a.mul(b));*/
     }
 
 }

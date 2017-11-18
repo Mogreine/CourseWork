@@ -16,6 +16,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public IBigInteger(long number) {
         negative = number < 0;
+        number = Math.abs(number);
         numsArr = new int[MAX_SIZE];
         size = 0;
         if (number == 0) {
@@ -171,16 +172,23 @@ public class IBigInteger implements Comparable<IBigInteger> {
         n.negative = false;
         IBigInteger res = powMod1(n, pow, mod);
         n.negative = neg1;
-        res.negative = pow % 2 != 0 && n.negative;
+        res.negative = false;
         return res;
     }
 
     public static IBigInteger powMod(IBigInteger n, IBigInteger pow, IBigInteger mod) {
         boolean neg1 = n.negative;
         n.negative = false;
+        if (pow.compareTo(ZERO) < 0) {
+            IBigInteger d = new IBigInteger(ZERO);
+            gcdEx(n, mod, d, new IBigInteger(ZERO));
+            IBigInteger res = powMod1(d, IBigInteger.abs(pow), mod);
+            n.negative = neg1;
+            return res;
+        }
         IBigInteger res = powMod1(n, pow, mod);
         n.negative = neg1;
-        res.negative = pow.mod(2) != 0 && n.negative;
+        res.negative = false;
         return res;
     }
 
@@ -208,6 +216,12 @@ public class IBigInteger implements Comparable<IBigInteger> {
         else {
             return (n.mul(tmp.mul(tmp))).mod(mod);
         }
+    }
+
+    public static IBigInteger abs(IBigInteger number) {
+        IBigInteger result = new IBigInteger(number);
+        result.negative = false;
+        return result;
     }
 
     public static boolean isEven(IBigInteger number) {
@@ -342,13 +356,15 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
         this.negative = neg1;
         number.negative = neg2;
+        if (IBigInteger.abs(result).compareTo(ZERO) == 0) {
+            result.negative = false;
+        }
         return result;
     }
 
     public IBigInteger mul(int number) {
         IBigInteger result = new IBigInteger(0L);
         boolean neg1 = this.negative;
-        boolean neg2 = number < 0;
         if (number < 0 && this.negative) {
             result.negative = false;
         }
@@ -368,8 +384,8 @@ public class IBigInteger implements Comparable<IBigInteger> {
             result.size--;
         }
         this.negative = neg1;
-        if (neg2) {
-            number *= -1;
+        if (IBigInteger.abs(result).compareTo(ZERO) == 0) {
+            result.negative = false;
         }
         return result;
     }
@@ -411,13 +427,15 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
         this.negative = neg1;
         number.negative = neg2;
+        if (IBigInteger.abs(result).compareTo(ZERO) == 0) {
+            result.negative = false;
+        }
         return result;
     }
 
     public IBigInteger div(int number) {
         IBigInteger result = new IBigInteger(0L);
         boolean neg1 = this.negative;
-        boolean neg2 = number < 0;
         if (number < 0 && this.negative) {
             result.negative = false;
         }
@@ -437,13 +455,16 @@ public class IBigInteger implements Comparable<IBigInteger> {
             result.size--;
         }
         this.negative = neg1;
-        if (neg2) {
-            number *= -1;
+        if (IBigInteger.abs(result).compareTo(ZERO) == 0) {
+            result.negative = false;
         }
         return result;
     }
 
     public IBigInteger mod(IBigInteger number) {
+        boolean neg1 = this.negative;
+        boolean neg2 = number.negative;
+        this.negative = number.negative = false;
         IBigInteger carry = new IBigInteger(0L);
         for (int i = this.size() - 1; i >= 0; i--) {
             carry = carry.mul(new IBigInteger(BASE));
@@ -463,6 +484,8 @@ public class IBigInteger implements Comparable<IBigInteger> {
             int digit = number.mul(r).compareTo(carry) <= 0 ? r : l;
             carry = carry.sub(number.mul(digit));
         }
+        this.negative = neg1;
+        number.negative = neg2;
         return carry;
     }
 
