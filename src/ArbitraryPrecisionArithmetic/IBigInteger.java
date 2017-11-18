@@ -11,7 +11,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
     public final static IBigInteger ONE = new IBigInteger(1L);
     public final static IBigInteger ZERO = new IBigInteger(0L);
     private int[] numsArr;
-    private boolean negative;
+    public boolean negative;
     private int size;
 
     public IBigInteger(long number) {
@@ -167,13 +167,19 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     public static IBigInteger powMod(IBigInteger n, int pow, IBigInteger mod) {
+        boolean neg1 = n.negative;
+        n.negative = false;
         IBigInteger res = powMod1(n, pow, mod);
+        n.negative = neg1;
         res.negative = pow % 2 != 0 && n.negative;
         return res;
     }
 
     public static IBigInteger powMod(IBigInteger n, IBigInteger pow, IBigInteger mod) {
+        boolean neg1 = n.negative;
+        n.negative = false;
         IBigInteger res = powMod1(n, pow, mod);
+        n.negative = neg1;
         res.negative = pow.mod(2) != 0 && n.negative;
         return res;
     }

@@ -5,25 +5,25 @@ import ArbitraryPrecisionArithmetic.IBigInteger;
 public class Keys {
 
     public static class KeysPair {
-        IBigInteger publicKey;
-        IBigInteger privateKey;
+        IBigInteger n1;
+        IBigInteger n2;
 
         public KeysPair() {
-            this.publicKey = new IBigInteger(0L);
-            this.privateKey = new IBigInteger(0L);
+            this.n1 = new IBigInteger(0L);
+            this.n2 = new IBigInteger(0L);
         }
 
-        public KeysPair(IBigInteger publicKey, IBigInteger privateKey) {
-            this.publicKey = new IBigInteger(publicKey);
-            this.privateKey = new IBigInteger(privateKey);
+        public KeysPair(IBigInteger n1, IBigInteger n2) {
+            this.n1 = new IBigInteger(n1);
+            this.n2 = new IBigInteger(n2);
         }
 
-        public IBigInteger getPublicKey() {
-            return publicKey;
+        public IBigInteger getN1() {
+            return n1;
         }
 
-        public IBigInteger getPrivateKey() {
-            return privateKey;
+        public IBigInteger getN2() {
+            return n2;
         }
     }
 
@@ -45,10 +45,10 @@ public class Keys {
         }
     }
 
-    static public KeysPair genKeys(int length) {
+    static public KeysPair genPrimeNumbers(int length) {
         KeysPair keys = new KeysPair(IBigInteger.randomBigInt(length), IBigInteger.randomBigInt(length));
-        IThread n1 = new IThread(keys.privateKey);
-        IThread n2 = new IThread(keys.publicKey);
+        IThread n1 = new IThread(keys.n2);
+        IThread n2 = new IThread(keys.n1);
         n1.start();
         n2.start();
         try {
