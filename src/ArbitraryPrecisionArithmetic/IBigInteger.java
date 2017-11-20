@@ -111,6 +111,20 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     public static IBigInteger gcdEx(IBigInteger a, IBigInteger b, IBigInteger x, IBigInteger y) {
+        IBigInteger d = gcdEx1(a, b, x, y);
+        if (x.compareTo(ZERO) < 0) {
+            IBigInteger delta = b.div(d);
+            IBigInteger factor = x.div(delta);
+            if (abs(x).mod(delta).compareTo(ZERO) != 0) {
+                factor = factor.add(ONE);
+            }
+            x.change(x.add(factor.mul(delta)));
+        }
+        //x.change(x.mod(b));
+        return d;
+    }
+
+    public static IBigInteger gcdEx1(IBigInteger a, IBigInteger b, IBigInteger x, IBigInteger y) {
         if (a.compareTo(ZERO) == 0) {
             x.change(ZERO);
             y.change(ONE);
@@ -118,9 +132,16 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
         IBigInteger x1 = new IBigInteger(ZERO);
         IBigInteger y1 = new IBigInteger(ZERO);
-        IBigInteger d = gcdEx(b.mod(a), a, x1, y1);
+        IBigInteger d = gcdEx1(b.mod(a), a, x1, y1);
         x.change(y1.sub((b.div(a)).mul(x1)));
         y.change(x1);
+        /*if (x < 0) {
+            int delta = b / d;
+            int factor = -x / delta;
+            if (-x % delta != 0)
+                factor++;
+            x += factor * delta;
+        }*/
         return d;
     }
 
@@ -170,25 +191,34 @@ public class IBigInteger implements Comparable<IBigInteger> {
     public static IBigInteger powMod(IBigInteger n, int pow, IBigInteger mod) {
         boolean neg1 = n.negative;
         n.negative = false;
-        IBigInteger res = powMod1(n, pow, mod);
+        IBigInteger res;
+        if (pow < 0) {
+            IBigInteger d = new IBigInteger(ZERO);
+            gcdEx(n, mod, d, new IBigInteger(ZERO));
+            res = powMod1(d, Math.abs(pow), mod);
+        }
+        else {
+            res = powMod1(n, pow, mod);
+        }
         n.negative = neg1;
-        res.negative = false;
+        res.negative = n.negative && pow % 2 != 0;
         return res;
     }
 
     public static IBigInteger powMod(IBigInteger n, IBigInteger pow, IBigInteger mod) {
         boolean neg1 = n.negative;
         n.negative = false;
+        IBigInteger res;
         if (pow.compareTo(ZERO) < 0) {
             IBigInteger d = new IBigInteger(ZERO);
             gcdEx(n, mod, d, new IBigInteger(ZERO));
-            IBigInteger res = powMod1(d, IBigInteger.abs(pow), mod);
-            n.negative = neg1;
-            return res;
+            res = powMod1(d, IBigInteger.abs(pow), mod);
         }
-        IBigInteger res = powMod1(n, pow, mod);
+        else {
+            res = powMod1(n, pow, mod);
+        }
         n.negative = neg1;
-        res.negative = false;
+        res.negative = n.negative && !IBigInteger.isEven(pow);
         return res;
     }
 
@@ -205,7 +235,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
     }
 
-    public static IBigInteger powMod1(IBigInteger n, IBigInteger pow, IBigInteger mod) {
+    private static IBigInteger powMod1(IBigInteger n, IBigInteger pow, IBigInteger mod) {
         if (pow.compareTo(ZERO) == 0) {
             return new IBigInteger(1L);
         }
@@ -486,14 +516,21 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
         this.negative = neg1;
         number.negative = neg2;
+        carry.negative = this.negative;
         return carry;
     }
 
     public int mod(int number) {
         int carry = 0;
+        boolean neg1 = this.negative;
+        this.negative = false;
         for (int i = this.size() - 1; i >= 0; i--) {
             carry = (int) (((long) carry * BASE + this.get(i)) % number);
         }
+        if (this.negative) {
+            carry *= -1;
+        }
+        this.negative = neg1;
         return carry;
     }
 

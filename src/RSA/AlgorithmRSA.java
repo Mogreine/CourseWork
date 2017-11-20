@@ -4,7 +4,7 @@ import ArbitraryPrecisionArithmetic.IBigInteger;
 
 public class AlgorithmRSA {
 
-    private static final IBigInteger e = new IBigInteger(257L);
+    private static final IBigInteger e = new IBigInteger(65537L);
 
     private Keys.KeysPair publicKey;
     private Keys.KeysPair privateKey;
@@ -31,8 +31,8 @@ public class AlgorithmRSA {
 
     private IBigInteger calcD(IBigInteger fi) {
         IBigInteger d = new IBigInteger(IBigInteger.ZERO);
-        IBigInteger.gcdEx(e, fi, d, new IBigInteger(IBigInteger.ZERO));
-        //d = d.mod(fi);
+        IBigInteger.gcdEx1(e, fi, d, new IBigInteger(IBigInteger.ZERO));
+        d = d.mod(fi);
         return d;
     }
 

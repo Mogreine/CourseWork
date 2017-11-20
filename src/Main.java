@@ -1,6 +1,10 @@
 import ArbitraryPrecisionArithmetic.IBigInteger;
 import RSA.AlgorithmRSA;
 
+import java.math.BigInteger;
+
+import static java.lang.Math.pow;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -36,13 +40,13 @@ public class Main {
 
         AlgorithmRSA user1 = new AlgorithmRSA(6);
         AlgorithmRSA user2 = new AlgorithmRSA(6);
-        IBigInteger message = new IBigInteger(132L);
+        IBigInteger message = new IBigInteger(654876L);
 
         for (int i = 0; i < 10; i++) {
             String encodedLetter = user1.encoding(message, user2.getPublicKey());
             String decodedLetter = user2.decoding(new IBigInteger(encodedLetter));
-            user1 = new AlgorithmRSA(6);
-            user2 = new AlgorithmRSA(6);
+            user1 = new AlgorithmRSA(20);
+            user2 = new AlgorithmRSA(20);
             System.out.println(decodedLetter);
         }
 
