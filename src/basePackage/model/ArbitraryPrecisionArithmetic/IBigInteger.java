@@ -1,4 +1,4 @@
-package ArbitraryPrecisionArithmetic;
+package basePackage.model.ArbitraryPrecisionArithmetic;
 
 import java.util.Random;
 import java.util.function.BiPredicate;

@@ -1,6 +1,6 @@
-package RSA;
+package basePackage.model.RSA;
 
-import ArbitraryPrecisionArithmetic.IBigInteger;
+import basePackage.model.ArbitraryPrecisionArithmetic.IBigInteger;
 
 public class Keys {
 
