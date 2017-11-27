@@ -16,8 +16,9 @@
         <TextArea id="text1" fx:id="sendText" layoutX="385.0" layoutY="16.0" prefHeight="157.0" prefWidth="222.0" />
         <Button layoutX="443.0" layoutY="191.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="107.0" text="Send" />
         <Button layoutX="91.0" layoutY="191.0" mnemonicParsing="false" onAction="#getMessage" prefHeight="31.0" prefWidth="107.0" text="Get" />
-        <Button layoutX="235.0" layoutY="258.0" mnemonicParsing="false" onAction="#generate" prefWidth="170.0" text="Generate" />
+        <Button layoutX="235.0" layoutY="258.0" mnemonicParsing="false" onAction="#generate" prefHeight="25.0" prefWidth="80.0" text="Generate" />
         <ProgressIndicator fx:id="indicator" layoutX="296.0" layoutY="296.0" prefHeight="52.0" prefWidth="48.0" progress="0.0" />
       <Label fx:id="systemMessage" alignment="TOP_CENTER" layoutX="175.0" layoutY="374.0" prefHeight="17.0" prefWidth="291.0" text="Системные сообщения" textAlignment="CENTER" />
+      <Button layoutX="325.0" layoutY="258.0" mnemonicParsing="false" onAction="#stopGenerating" prefHeight="25.0" prefWidth="80.0" text="Stop" />
     </children>
 </AnchorPane>

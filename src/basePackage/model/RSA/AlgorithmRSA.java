@@ -33,36 +33,52 @@ public class AlgorithmRSA {
             if (message.charAt(i) == '\n') {
                 continue;
             }
+            //На самом деле длина одного символа в закодированном виде не keySize -> надо исправить
             result.append(IBigInteger.powMod(new IBigInteger(message.substring(i, i + keySize)), privateKey.n1, privateKey.n2).toString());
         }
         return result.toString();
     }
 
-    public void genKeys() {
+    public void stopGeneration() {
+        Keys.stopGen();
+    }
+
+    public boolean isGenerating() {
+        return Keys.isGenerating();
+    }
+
+    public boolean genKeys() {
+        if (keysPair == null || keysPair.n1.equals(IBigInteger.ZERO)) {
+            keysPair = Keys.genPrimeNumbers(keySize);
+            if (keysPair.n1.equals(IBigInteger.ZERO) || keysPair.n2.equals(IBigInteger.ZERO)) {
+                return false;
+            }
+            n = keysPair.n2.mul(keysPair.n1);
+        }
+        else {
+            return false;
+        }
         genPublicKey();
         genPrivateKey();
+        return true;
+    }
+
+    public boolean areKeysGenerated() {
+        return !isGenerating() && (keysPair != null && (keysPair.n1 != null && keysPair.n2 != null) && !keysPair.n1.equals(IBigInteger.ZERO) && !keysPair.n2.equals(IBigInteger.ZERO));
     }
 
     public void genPublicKey() {
-        if (keysPair == null) {
-            keysPair = Keys.genPrimeNumbers(keySize);
-            n = keysPair.n2.mul(keysPair.n1);
-        }
         publicKey = new Keys.KeysPair(e, n);
     }
 
     public void genPrivateKey() {
-        if (keysPair == null) {
-            keysPair = Keys.genPrimeNumbers(keySize);
-            n = keysPair.n2.mul(keysPair.n1);
-        }
         IBigInteger fi = keysPair.n1.sub(IBigInteger.ONE).mul(keysPair.n2.sub(IBigInteger.ONE));
         privateKey = new Keys.KeysPair(calcD(fi), n);
     }
 
     private IBigInteger calcD(IBigInteger fi) {
         IBigInteger d = new IBigInteger(IBigInteger.ZERO);
-        IBigInteger.gcdEx1(e, fi, d, new IBigInteger(IBigInteger.ZERO));
+        IBigInteger.gcdEx(e, fi, d, new IBigInteger(IBigInteger.ZERO));
         d = d.mod(fi);
         return d;
     }

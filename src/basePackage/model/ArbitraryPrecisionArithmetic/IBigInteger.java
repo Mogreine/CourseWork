@@ -73,6 +73,19 @@ public class IBigInteger implements Comparable<IBigInteger> {
         return result.toString();
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj.getClass() != this.getClass()) {
+            return false;
+        }
+        else {
+            return this.compareTo((IBigInteger) obj) == 0;
+        }
+    }
+
     public static IBigInteger randomBigInt(int size) {
         Random rand = new Random();
         IBigInteger result = new IBigInteger(0L);

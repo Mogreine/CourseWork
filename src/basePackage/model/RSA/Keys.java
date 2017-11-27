@@ -34,21 +34,28 @@ public class Keys {
             this.number = number;
         }
 
-        public void start() {
-            run();
-        }
-
+        @Override
         public void run() {
             while (!IBigInteger.isPrime(number)) {
-                number.change(IBigInteger.randomBigInt(number.size()));
+                if (!Thread.interrupted()) {
+                    number.change(IBigInteger.randomBigInt(number.size()));
+                }
+                else {
+                    number.change(new IBigInteger(IBigInteger.ZERO));
+                    return;
+                }
             }
         }
     }
 
+    public static IThread n1;
+    public static IThread n2;
+
+
     static public KeysPair genPrimeNumbers(int length) {
         KeysPair keys = new KeysPair(IBigInteger.randomBigInt(length), IBigInteger.randomBigInt(length));
-        IThread n1 = new IThread(keys.n2);
-        IThread n2 = new IThread(keys.n1);
+        n1 = new IThread(keys.n1);
+        n2 = new IThread(keys.n2);
         n1.start();
         n2.start();
         try {
@@ -60,64 +67,12 @@ public class Keys {
         return keys;
     }
 
-
-    /*private boolean isPrime(int num, int k) {
-        long t = num - 1;
-        long s = 0 ;
-        Random randNum = new Random();
-        while (t % 2 == 0) {
-            s++;
-            t >>= 1;
-        }
-        for (int i = 0; i < k; i++) {
-            long a = 1 + randNum.nextInt(num - 1);
-            long x = powMod(a, t, num);
-            if (x == 1 || x == num - 1) {
-                continue;
-            }
-            boolean flag = false;
-            for (int ii = 0; ii < s - 1; ii++) {
-                x = powMod(x, 2, num);
-                if (x == 1) {
-                    return false;
-                }
-                if (x == num - 1) {
-                    flag = true;
-                    break;
-                }
-            }
-            if (!flag) {
-                return false;
-            }
-        }
-        return true;
+    public static void stopGen() {
+        n1.interrupt();
+        n2.interrupt();
     }
 
-    private long fastPow(long num, long pow) {
-        long result = 1;
-        while (pow > 0) {
-            if (pow % 2 == 1) {
-                result *= num;
-            }
-            num *= num;
-            pow >>= 1;
-        }
-        return result;
+    public static boolean isGenerating() {
+        return (n1 != null && n2 != null) && (n1.isAlive() || n2.isAlive());
     }
-
-    private long powMod(long n, long pow, long mod) {
-        if (pow == 0)
-            return 1;
-        long tmp = powMod(n, pow / 2, mod);
-        if (pow % 2 == 0) {
-            return (tmp * tmp) % mod;
-        }
-        else {
-            return (n * tmp * tmp) % mod;
-        }
-    }
-
-    private long gcd (long a, long b) {
-        return b != 0 ? gcd(b, a % b) : a;
-    }*/
 }

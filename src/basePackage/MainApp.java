@@ -66,6 +66,7 @@ public class MainApp extends Application {
             rootLayout.setCenter(anchor);
             RSAOverviewController controller = loader.getController();
             controller.setMainApp(this);
+            controller.initUser();
         } catch (IOException e) {
             e.printStackTrace();
         }
