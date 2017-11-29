@@ -8,7 +8,6 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 
 import java.io.*;
-import java.util.TreeMap;
 
 public class RSAOverviewController {
 
@@ -17,12 +16,14 @@ public class RSAOverviewController {
         @Override
         public void run() {
             user.genKeys();
+            systemMessage.setText("Ключи сгенерированы");
         }
 
         @Override
         public void interrupt() {
             if (!Thread.interrupted()) {
                 user.stopGeneration();
+                systemMessage.setText("Генерация ключей прервана.");
             }
         }
 
@@ -57,13 +58,13 @@ public class RSAOverviewController {
     private void generate() {
         if (!genThread.isAlive()) {
             genThread.start();
-            try {
+            /*try {
                 genThread.join();
             } catch (InterruptedException e) {
                 systemMessage.setText("Генерация ключей прервана.");
                 return;
-            }
-            systemMessage.setText("Ключи сгенерированы");
+            }*/
+            //systemMessage.setText("Ключи сгенерированы");
         }
         else {
             systemMessage.setText("Ключи еще генерируются!");

@@ -2,6 +2,8 @@ package basePackage.model.RSA;
 
 import basePackage.model.ArbitraryPrecisionArithmetic.IBigInteger;
 
+import java.util.StringTokenizer;
+
 public class AlgorithmRSA {
 
     private static final IBigInteger e = new IBigInteger(65537L);
@@ -22,19 +24,20 @@ public class AlgorithmRSA {
             if (message.charAt(i) == '\n') {
                 continue;
             }
-            result.append(IBigInteger.powMod(new IBigInteger(message.charAt(i)), anotherOpenKey.n1, anotherOpenKey.n2).toString());
+            result.append(IBigInteger.powMod(new IBigInteger(message.charAt(i)), anotherOpenKey.n1, anotherOpenKey.n2).toString()).append(" ");
         }
         return result.toString();
     }
 
     public String decoding(String message) {
         StringBuilder result = new StringBuilder();
-        for (int i = 0; i < message.length(); i += keySize) {
-            if (message.charAt(i) == '\n') {
-                continue;
+        StringTokenizer mm = new StringTokenizer(message, " ");
+        while (mm.hasMoreTokens()) {
+            String temp = mm.nextToken();
+            if (temp.charAt(temp.length() - 1) == '\n') {
+                temp = temp.substring(0, temp.length() - 1);
             }
-            //На самом деле длина одного символа в закодированном виде не keySize -> надо исправить
-            result.append(IBigInteger.powMod(new IBigInteger(message.substring(i, i + keySize)), privateKey.n1, privateKey.n2).toString());
+            result.append((char) Integer.parseInt(IBigInteger.powMod(new IBigInteger(temp), privateKey.n1, privateKey.n2).toString()));
         }
         return result.toString();
     }
