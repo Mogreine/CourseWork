@@ -2,6 +2,7 @@ package basePackage.model.RSA;
 
 import basePackage.model.ArbitraryPrecisionArithmetic.IBigInteger;
 
+import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class AlgorithmRSA {
@@ -37,6 +38,10 @@ public class AlgorithmRSA {
             if (temp.charAt(temp.length() - 1) == '\n') {
                 temp = temp.substring(0, temp.length() - 1);
             }
+            if (temp.equals("\n") || temp.equals("")) {
+                result.append("\n");
+                continue;
+            }
             result.append((char) Integer.parseInt(IBigInteger.powMod(new IBigInteger(temp), privateKey.n1, privateKey.n2).toString()));
         }
         return result.toString();
@@ -50,7 +55,7 @@ public class AlgorithmRSA {
         return Keys.isGenerating();
     }
 
-    public boolean genKeys() {
+    public boolean genKeys() throws InterruptedException {
         if (keysPair == null || keysPair.n1.equals(IBigInteger.ZERO)) {
             keysPair = Keys.genPrimeNumbers(keySize);
             if (keysPair.n1.equals(IBigInteger.ZERO) || keysPair.n2.equals(IBigInteger.ZERO)) {

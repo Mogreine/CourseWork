@@ -8,26 +8,10 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 
 import java.io.*;
+import java.util.StringTokenizer;
+import java.util.concurrent.Exchanger;
 
 public class RSAOverviewController {
-
-    private class GenThread extends Thread {
-
-        @Override
-        public void run() {
-            user.genKeys();
-            systemMessage.setText("Ключи сгенерированы");
-        }
-
-        @Override
-        public void interrupt() {
-            if (!Thread.interrupted()) {
-                user.stopGeneration();
-                systemMessage.setText("Генерация ключей прервана.");
-            }
-        }
-
-    }
 
     @FXML
     private Label systemMessage;
@@ -41,30 +25,64 @@ public class RSAOverviewController {
     @FXML
     private ProgressIndicator indicator;
 
+    private class GenThread extends Thread {
+        String message;
+        Exchanger<String> ex;
+
+        public GenThread(Exchanger<String> ex) {
+            this.ex = ex;
+        }
+
+        @Override
+        public void run() {
+            try {
+                user.genKeys();
+                message = "Ключи сгенерированы";
+            } catch (InterruptedException e) {
+                message = "Генерация ключей прервана.";
+            }
+            try {
+                ex.exchange(message);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        @Override
+        public void interrupt() {
+            if (!Thread.interrupted()) {
+                user.stopGeneration();
+            }
+        }
+
+    }
+
     private MainApp mainApp;
     private AlgorithmRSA user;
     private GenThread genThread;
+    private Exchanger<String> message;
     public RSAOverviewController() {
 
     }
 
     @FXML
     private void initialize() {
-        genThread = new GenThread();
+        message = new Exchanger<>();
+        genThread = new GenThread(message);
         systemMessage.setText("Все в порядке");
     }
 
     @FXML
-    private void generate() {
+    private void generate() throws InterruptedException {
         if (!genThread.isAlive()) {
-            genThread.start();
-            /*try {
-                genThread.join();
-            } catch (InterruptedException e) {
-                systemMessage.setText("Генерация ключей прервана.");
-                return;
-            }*/
-            //systemMessage.setText("Ключи сгенерированы");
+            if (!user.areKeysGenerated()) {
+                genThread.start();
+                String m = "asd";
+                m = message.exchange(m);
+                systemMessage.setText(m);
+            } else {
+                systemMessage.setText("Ключи уже сгенерированы");
+            }
         }
         else {
             systemMessage.setText("Ключи еще генерируются!");

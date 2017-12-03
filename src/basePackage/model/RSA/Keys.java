@@ -52,18 +52,14 @@ public class Keys {
     public static IThread n2;
 
 
-    static public KeysPair genPrimeNumbers(int length) {
+    static public KeysPair genPrimeNumbers(int length) throws InterruptedException {
         KeysPair keys = new KeysPair(IBigInteger.randomBigInt(length), IBigInteger.randomBigInt(length));
         n1 = new IThread(keys.n1);
         n2 = new IThread(keys.n2);
         n1.start();
         n2.start();
-        try {
-            n1.join();
-            n2.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        n1.join();
+        n2.join();
         return keys;
     }
 
