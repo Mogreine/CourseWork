@@ -4,7 +4,6 @@ import basePackage.MainApp;
 import basePackage.model.RSA.AlgorithmRSA;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextArea;
 
 import java.io.*;
@@ -20,12 +19,12 @@ public class RSAOverviewController {
     private TextArea getText;
 
     @FXML
-    private TextArea sendText;
+    private TextArea encodedText;
 
     @FXML
-    private ProgressIndicator indicator;
+    private TextArea sendText;
 
-    private class GenThread extends Thread {
+    /*private class GenThread extends Thread {
         String message;
         Exchanger<String> ex;
 
@@ -56,23 +55,24 @@ public class RSAOverviewController {
         }
 
     }
+    */
 
     private MainApp mainApp;
     private AlgorithmRSA user;
-    private GenThread genThread;
-    private Exchanger<String> message;
+    //private GenThread genThread;
+    //private Exchanger<String> message;
     public RSAOverviewController() {
 
     }
 
     @FXML
     private void initialize() {
-        message = new Exchanger<>();
-        genThread = new GenThread(message);
+        //message = new Exchanger<>();
+        //genThread = new GenThread(message);
         systemMessage.setText("Все в порядке");
     }
 
-    @FXML
+    /*@FXML
     private void generate() throws InterruptedException {
         if (!genThread.isAlive()) {
             if (!user.areKeysGenerated()) {
@@ -80,16 +80,28 @@ public class RSAOverviewController {
                 String m = "asd";
                 m = message.exchange(m);
                 systemMessage.setText(m);
-            } else {
+            }
+            else {
                 systemMessage.setText("Ключи уже сгенерированы");
             }
         }
         else {
             systemMessage.setText("Ключи еще генерируются!");
         }
-    }
+    }*/
 
     @FXML
+    private void gen() {
+        if (!user.areKeysGenerated2()) {
+            user.genKeys2();
+            systemMessage.setText("Ключи успешно сгенерированы!");
+        }
+        else {
+            systemMessage.setText("Ключи уже сгенерированы");
+        }
+    }
+
+    /*@FXML
     private void stopGenerating() {
         if (genThread.isAlive()) {
             genThread.interrupt();
@@ -97,7 +109,7 @@ public class RSAOverviewController {
         else {
             systemMessage.setText("Процесс генерации не запущен!");
         }
-    }
+    }*/
 
     @FXML
     private void sendMessage() {
@@ -110,6 +122,7 @@ public class RSAOverviewController {
             return;
         }
         String encodedMessage = user.encoding(sendText.getText(), user.getPublicKey());
+        encodedText.setText(encodedMessage);
         try (FileWriter out = new FileWriter(new File("src/basePackage/Sender/pass.txt"), false)) {
             out.write(encodedMessage);
         } catch (IOException e) {

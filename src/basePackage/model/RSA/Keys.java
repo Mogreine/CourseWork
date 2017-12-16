@@ -2,6 +2,8 @@ package basePackage.model.RSA;
 
 import basePackage.model.ArbitraryPrecisionArithmetic.IBigInteger;
 
+import java.util.Random;
+
 public class Keys {
 
     public static class KeysPair {
@@ -27,7 +29,7 @@ public class Keys {
         }
     }
 
-    private static class IThread extends Thread {
+    /*private static class IThread extends Thread {
         private IBigInteger number;
 
         public IThread(IBigInteger number) {
@@ -36,26 +38,26 @@ public class Keys {
 
         @Override
         public void run() {
-            int amount = 0;
+            Random rand = new Random();
             while (!IBigInteger.isPrime(number)) {
                 if (!Thread.interrupted()) {
-                    number.change(IBigInteger.randomBigInt(number.size()));
+                    number.change(IBigInteger.randomBigInt(number.size(), rand));
                 }
                 else {
                     number.change(new IBigInteger(IBigInteger.ZERO));
                     return;
                 }
-                amount++;
             }
         }
     }
 
     public static IThread n1;
-    public static IThread n2;
+    public static IThread n2;*/
 
 
-    static public KeysPair genPrimeNumbers(int length) throws InterruptedException {
-        KeysPair keys = new KeysPair(IBigInteger.randomBigInt(length), IBigInteger.randomBigInt(length));
+    /*static public KeysPair genPrimeNumbers(int length) throws InterruptedException {
+        Random rand = new Random();
+        KeysPair keys = new KeysPair(IBigInteger.randomBigInt(length, rand), IBigInteger.randomBigInt(length, rand));
         n1 = new IThread(keys.n1);
         n2 = new IThread(keys.n2);
         n1.start();
@@ -64,13 +66,28 @@ public class Keys {
         n2.join();
         return keys;
     }
+*/
+    static public KeysPair genPrimeNumbers2(int length) {
+        Random rand = new Random();
+        KeysPair keys = new KeysPair(IBigInteger.randomBigInt(length, rand), IBigInteger.randomBigInt(length, rand));
+        int count1 = 0, count2 = 0;
+        while (!IBigInteger.isPrime(keys.n1)) {
+            keys.n1 = IBigInteger.randomBigInt(length, rand);
+            count1++;
+        }
+        while (!IBigInteger.isPrime(keys.n2)) {
+            keys.n2 = IBigInteger.randomBigInt(length, rand);
+            count2++;
+        }
+        return keys;
+    }
 
-    public static void stopGen() {
+    /*public static void stopGen() {
         n1.interrupt();
         n2.interrupt();
     }
 
     public static boolean isGenerating() {
         return (n1 != null && n2 != null) && (n1.isAlive() || n2.isAlive());
-    }
+    }*/
 }

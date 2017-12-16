@@ -74,6 +74,26 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     @Override
+    public int compareTo(IBigInteger number) {
+        if (number.negative != this.negative) {
+            return this.negative ? -1 : 1;
+        }
+        BiPredicate<Integer, Integer> comp = (a, b) -> a < b;
+        if (this.negative) {
+            comp = comp.negate();
+        }
+        if (number.size() != this.size()) {
+            return comp.test(this.size(), number.size()) ? -1 : 1;
+        }
+        for (int i = size() - 1; i >= 0; i--) {
+            if (this.get(i) != number.get(i)) {
+                return comp.test(this.get(i), number.get(i)) ? -1 : 1;
+            }
+        }
+        return 0;
+    }
+
+    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -86,8 +106,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
     }
 
-    public static IBigInteger randomBigInt(int size) {
-        Random rand = new Random();
+    public static IBigInteger randomBigInt(int size, Random rand) {
         IBigInteger result = new IBigInteger(0L);
         result.set(size - 1, 1 + rand.nextInt(10 - 1));
         for (int i = 0; i < size - 1; i ++) {
@@ -100,8 +119,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
         return result;
     }
 
-    public static IBigInteger randomBigInt(int size, IBigInteger bound) {
-        Random rand = new Random();
+    public static IBigInteger randomBigInt(int size, Random rand, IBigInteger bound) {
         IBigInteger result = new IBigInteger(0L);
         result.set(size - 1, 1 + rand.nextInt(10 - 1));
         for (int i = 0; i < size - 1; i ++) {
@@ -159,7 +177,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     public static boolean isPrime(IBigInteger number) {
-        return isPrime(number, 55);
+        return isPrime(number, 45);
     }
 
     private static boolean obviousNotPrime(IBigInteger num) {
@@ -177,8 +195,10 @@ public class IBigInteger implements Comparable<IBigInteger> {
             t = t.div(2);
         }
         IBigInteger num_1 = number.sub(ONE);
+        IBigInteger two = new IBigInteger(2);
+        Random rand = new Random();
         for (int i = 0; i < k; i++) {
-            IBigInteger a = IBigInteger.randomBigInt(number.size(), number.sub(new IBigInteger(2)));
+            IBigInteger a = IBigInteger.randomBigInt(number.size(), rand, number.sub(two));
             IBigInteger x = IBigInteger.powMod(a, t, number);
             if (x.compareTo(ONE) == 0 || x.compareTo(num_1) == 0) {
                 continue;
@@ -269,26 +289,6 @@ public class IBigInteger implements Comparable<IBigInteger> {
 
     public static boolean isEven(IBigInteger number) {
         return number.get(0) % 2 == 0;
-    }
-
-    @Override
-    public int compareTo(IBigInteger number) {
-        if (number.negative != this.negative) {
-            return this.negative ? -1 : 1;
-        }
-        BiPredicate<Integer, Integer> comp = (a, b) -> a < b;
-        if (this.negative) {
-            comp = comp.negate();
-        }
-        if (number.size() != this.size()) {
-            return comp.test(this.size(), number.size()) ? -1 : 1;
-        }
-        for (int i = size() - 1; i >= 0; i--) {
-            if (this.get(i) != number.get(i)) {
-                return comp.test(this.get(i), number.get(i)) ? -1 : 1;
-            }
-        }
-        return 0;
     }
 
     public int size() {

@@ -47,15 +47,15 @@ public class AlgorithmRSA {
         return result.toString();
     }
 
-    public void stopGeneration() {
+    /*public void stopGeneration() {
         Keys.stopGen();
     }
 
     public boolean isGenerating() {
         return Keys.isGenerating();
-    }
+    }*/
 
-    public boolean genKeys() throws InterruptedException {
+    /*public boolean genKeys() throws InterruptedException {
         if (keysPair == null || keysPair.n1.equals(IBigInteger.ZERO)) {
             keysPair = Keys.genPrimeNumbers(keySize);
             if (keysPair.n1.equals(IBigInteger.ZERO) || keysPair.n2.equals(IBigInteger.ZERO)) {
@@ -69,10 +69,21 @@ public class AlgorithmRSA {
         genPublicKey();
         genPrivateKey();
         return true;
+    }*/
+
+    public void genKeys2() {
+        keysPair = Keys.genPrimeNumbers2(keySize);
+        n = keysPair.n2.mul(keysPair.n1);
+        genPublicKey();
+        genPrivateKey();
     }
 
     public boolean areKeysGenerated() {
-        return !isGenerating() && (keysPair != null && (keysPair.n1 != null && keysPair.n2 != null) && !keysPair.n1.equals(IBigInteger.ZERO) && !keysPair.n2.equals(IBigInteger.ZERO));
+        return (keysPair != null && (keysPair.n1 != null && keysPair.n2 != null) && !keysPair.n1.equals(IBigInteger.ZERO) && !keysPair.n2.equals(IBigInteger.ZERO));
+    }
+
+    public boolean areKeysGenerated2() {
+        return keysPair != null;
     }
 
     public void genPublicKey() {

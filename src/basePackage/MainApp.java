@@ -19,7 +19,7 @@ public class MainApp extends Application {
     private AlgorithmRSA user;
 
     public MainApp() {
-        user = new AlgorithmRSA(10);
+        user = new AlgorithmRSA(15);
     }
 
     public static void main(String[] args) {
