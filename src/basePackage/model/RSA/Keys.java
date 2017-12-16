@@ -36,6 +36,7 @@ public class Keys {
 
         @Override
         public void run() {
+            int amount = 0;
             while (!IBigInteger.isPrime(number)) {
                 if (!Thread.interrupted()) {
                     number.change(IBigInteger.randomBigInt(number.size()));
@@ -44,6 +45,7 @@ public class Keys {
                     number.change(new IBigInteger(IBigInteger.ZERO));
                     return;
                 }
+                amount++;
             }
         }
     }
