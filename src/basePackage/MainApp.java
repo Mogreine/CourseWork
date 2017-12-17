@@ -1,13 +1,14 @@
 package basePackage;
 
+import basePackage.model.RSA.AlgorithmRSA;
 import basePackage.view.RSAOverviewController;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import basePackage.model.RSA.AlgorithmRSA;
 
 import java.io.IOException;
 
@@ -36,9 +37,8 @@ public class MainApp extends Application {
     }
 
     /**
-     * Инициализация коневого макета
+     * Initialization of root scene
      */
-
     public void initRootLayout() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -56,7 +56,6 @@ public class MainApp extends Application {
     /**
      * Показ панели управления для шифрования
      */
-
     public void showRSAOverview() {
         try {
             FXMLLoader loader = new FXMLLoader();
@@ -72,10 +71,6 @@ public class MainApp extends Application {
         }
     }
 
-    /**
-     * Возвращает главную сцену
-     * @return внешний слой
-     */
     public Stage getPrimaryStage() {
         return primaryStage;
     }
