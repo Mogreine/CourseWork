@@ -221,7 +221,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
      * @return Простое число или нет.
      */
     public static boolean isPrime(IBigInteger number) {
-        return isPrime(number, 45);
+        return isPrime(number, 37);
     }
 
     /**
@@ -277,41 +277,6 @@ public class IBigInteger implements Comparable<IBigInteger> {
         }
         return true;
     }
-
-   /* public static IBigInteger powMod(IBigInteger n, int pow, IBigInteger mod) {
-        boolean neg1 = n.negative;
-        n.negative = false;
-        IBigInteger res;
-        //При возведении в отрицаельную степень
-        if (pow < 0) {
-            IBigInteger d = new IBigInteger(ZERO);
-            gcdEx(n, mod, d, new IBigInteger(ZERO));
-            res = powMod1(d, Math.abs(pow), mod);
-        } else {
-            res = powMod1(n, pow, mod);
-        }
-        n.negative = neg1;
-        res.negative = n.negative && pow % 2 != 0;
-        return res;
-    }
-
-    *//*
-    public static IBigInteger powMod(IBigInteger n, IBigInteger pow, IBigInteger mod) {
-        boolean neg1 = n.negative;
-        n.negative = false;
-        IBigInteger res;
-        if (pow.compareTo(ZERO) < 0) {
-            IBigInteger d = new IBigInteger(ZERO);
-            gcdEx(n, mod, d, new IBigInteger(ZERO));
-            res = powMod1(d, IBigInteger.abs(pow), mod);
-        }
-        else {
-            res = powMod1(n, pow, mod);
-        }
-        n.negative = neg1;
-        res.negative = n.negative && !IBigInteger.isEven(pow);
-        return res;
-    }*/
 
     /**
      * Реализует бинарное возведение в степень по модулю.
@@ -640,7 +605,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
     /**
      * Находит остаток от деления
      * @param number Число на которое делится объект
-     * @return
+     * @return Остаток от деления на number
      */
     public IBigInteger mod(IBigInteger number) {
         boolean neg1 = this.negative;
@@ -674,7 +639,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
     /**
      * Находит остаток от деления на число типа int
      * @param number Число на которое делится объект
-     * @return
+     * @return Остаток от деления на number
      */
     public int mod(int number) {
         int carry = 0;

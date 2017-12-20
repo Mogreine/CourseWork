@@ -37,7 +37,7 @@ public class MainApp extends Application {
     }
 
     /**
-     * Initialization of root scene
+     * Загрузка основной сцены
      */
     public void initRootLayout() {
         try {
