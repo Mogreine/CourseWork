@@ -25,7 +25,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
     private int size;
 
     /**
-     * Создает объект на основе числа типа long
+     * Конструктор - создает объект на основе числа типа long
      * @param number Число для создания объекта
      */
     public IBigInteger(long number) {
@@ -43,7 +43,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     /**
-     * Создает объект на основе строки
+     * Конструктор - создает объект на основе строки
      * @param number Строка, представляющая число
      */
     public IBigInteger(String number) {
@@ -63,7 +63,7 @@ public class IBigInteger implements Comparable<IBigInteger> {
     }
 
     /**
-     * Создает объект на основе другого числа, представленного классом IBigInteger
+     * Конструктор - создает объект на основе другого числа, представленного классом IBigInteger
      * @param number Экземпляр класса IBigInteger
      */
     public IBigInteger(IBigInteger number) {

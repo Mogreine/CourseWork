@@ -9,7 +9,7 @@ import org.junit.Test;
 import java.math.BigInteger;
 import java.util.Random;
 
-public class Test1 extends Assert {
+public class Test1 extends Assert{
 
     @Test
     public void testPrime() {

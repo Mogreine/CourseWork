@@ -15,7 +15,7 @@
         <TextArea id="text2" fx:id="encodedText" layoutX="33.0" layoutY="14.0" prefHeight="204.0" prefWidth="734.0" />
         <Button layoutX="586.0" layoutY="418.0" mnemonicParsing="false" onAction="#sendMessage" prefHeight="31.0" prefWidth="107.0" text="Send" />
         <Button layoutX="92.0" layoutY="418.0" mnemonicParsing="false" onAction="#getMessage" prefHeight="31.0" prefWidth="107.0" text="Get" />
-        <Button layoutX="361.0" layoutY="297.0" mnemonicParsing="false" onAction="#gen" prefHeight="25.0" prefWidth="80.0" text="Generate" />
+        <Button layoutX="361.0" layoutY="297.0" mnemonicParsing="false" onAction="#gen" prefHeight="31.0" prefWidth="81.0" text="Generate" />
       <Label fx:id="systemMessage" alignment="TOP_CENTER" layoutX="255.0" layoutY="441.0" prefHeight="17.0" prefWidth="291.0" text="Системные сообщения" textAlignment="CENTER" />
       <TextArea id="text2" fx:id="getText" layoutX="33.0" layoutY="243.0" prefHeight="157.0" prefWidth="252.0" />
       <TextArea id="text2" fx:id="sendText" layoutX="500.0" layoutY="243.0" prefHeight="157.0" prefWidth="267.0" />

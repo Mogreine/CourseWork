@@ -40,6 +40,11 @@ public class RSAOverviewController {
     private void gen() {
         if (!user.areKeysGenerated()) {
             user.genKeys();
+            try (FileWriter out = new FileWriter(new File("src/basePackage/Sender/pass.txt"), false)) {
+                out.write("");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             systemMessage.setText("Ключи успешно сгенерированы!");
         } else {
             systemMessage.setText("Ключи уже сгенерированы");
@@ -80,6 +85,7 @@ public class RSAOverviewController {
             }
         }
         catch (IOException e) {
+            systemMessage.setText("Нет данных для расшифровки!");
             e.printStackTrace();
         }
         if (encodedMessage.toString().equals("null\n")) {

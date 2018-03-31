@@ -58,7 +58,7 @@ public class AlgorithmRSA {
     /**
      * Шифрует сообщение посимвольно
      * @param message Сообщение
-     * @param anotherOpenKey открытый ключ получателя
+     * @param anotherOpenKey Открытый ключ получателя
      * @return Зашифрованное сообщение
      */
     public String encoding(String message, KeysPair anotherOpenKey) {
@@ -96,8 +96,8 @@ public class AlgorithmRSA {
 
     /**
      * Генерирует 2 простых числа определеннной длины. Для проверки на простоту использует тест Миллера-Рабина
-     * @param length длина генерируемых чисел
-     * @return Пару сгенерированных чисел
+     * @param length Длина генерируемых чисел
+     * @return Пару простых чисел
      */
     public KeysPair genPrimeNumbers(int length) {
         Random rand = new Random();
